@@ -20,12 +20,31 @@ namespace Dormouse.WebApi.Controllers
             this.dbContext = dbContext;
         }
 
-        [HttpGet]
+        [HttpGet(nameof(List))]
         public ActionResult<IList<Period>> List(int teamId)
         {
-            var result = from period in dbContext.Periods
-                         where period.TeamId == teamId
-                         select period;
+            var result = (from period in dbContext.Periods
+                          where period.TeamId == teamId
+                          orderby period.CreateDate descending
+                          select period).ToList();
+            // 查找是否有当前时间的周期
+            var now = DateTime.Now;
+            if (result.FindIndex(i => i.StartDate < now && i.EndDate > now) <= 0)
+            {
+                var chineseDayOfWeek = now.DayOfWeek == 0 ? 7 : (int)now.DayOfWeek;
+                var startDate = now.AddDays(0 - (chineseDayOfWeek - 1));
+                var endDate = startDate.AddDays(14);
+                var current = new Period
+                {
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    CreateDate = now,
+                    TeamId = teamId
+                };
+                dbContext.Periods.Add(current);
+                dbContext.SaveChanges();
+                result.Add(current);
+            }
             return result.ToList();
         }
     }

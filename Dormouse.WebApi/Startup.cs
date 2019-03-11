@@ -25,6 +25,10 @@ namespace Dormouse.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(option =>
+            {
+                option.AddDefaultPolicy(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddEntityFrameworkNpgsql().AddDbContext<DormouseDbContext>().BuildServiceProvider();
         }
@@ -43,6 +47,7 @@ namespace Dormouse.WebApi
                 context.Database.EnsureCreated();
             }
 
+            app.UseCors();
             app.UseMvc();
         }
     }

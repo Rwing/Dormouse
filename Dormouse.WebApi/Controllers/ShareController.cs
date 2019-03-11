@@ -21,7 +21,7 @@ namespace Dormouse.WebApi.Controllers
             this.dbContext = dbContext;
         }
 
-        [HttpGet]
+        [HttpGet(nameof(List))]
         public ActionResult List(int periodId)
         {
             var result = dbContext.ShareItems
@@ -34,6 +34,16 @@ namespace Dormouse.WebApi.Controllers
                             Count = g.Count()
                         });
             return Ok(result.ToList());
+        }
+
+        [HttpPost(nameof(Create))]
+        public async Task<ActionResult<ShareItem>> Create([FromBody]ShareItem shareItem)
+        {
+            // TODO get current user
+            shareItem.CreateDate = DateTime.Now;
+            dbContext.ShareItems.Add(shareItem);
+            await dbContext.SaveChangesAsync();
+            return shareItem;
         }
     }
 }

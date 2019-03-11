@@ -20,7 +20,7 @@ namespace Dormouse.WebApi.Controllers
         }
 
         // GET api/values
-        [HttpGet]
+        [HttpGet(nameof(Get))]
         public ActionResult<IList<User>> Get()
         {
             var users = from i in dbContext.Users

@@ -20,12 +20,22 @@ namespace Dormouse.WebApi.Controllers
             this.dbContext = dbContext;
         }
 
-        [HttpGet]
+        [HttpGet(nameof(List))]
         public ActionResult<IList<Team>> List()
         {
             var result = from i in dbContext.Teams
                         select i;
             return result.ToList();
+        }
+
+        [HttpPost(nameof(Up))]
+        public async Task<ActionResult<VoteItem>> Up([FromBody] VoteItem voteItem)
+        {
+            // TODO get current user
+            voteItem.CreateDate = DateTime.Now;
+            dbContext.VoteItems.Add(voteItem);
+            await dbContext.SaveChangesAsync();
+            return voteItem;
         }
     }
 }

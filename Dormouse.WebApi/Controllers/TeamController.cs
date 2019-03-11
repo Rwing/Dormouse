@@ -20,7 +20,7 @@ namespace Dormouse.WebApi.Controllers
             this.dbContext = dbContext;
         }
 
-        [HttpGet]
+        [HttpGet(nameof(List))]
         public ActionResult<IList<Team>> List()
         {
             var result = from i in dbContext.Teams
